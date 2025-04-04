@@ -138,6 +138,10 @@ export const EnergyCalculator = ({
   return (
     <Box>
       <Container size={"3"}>
+
+        <h3>Energy calculator demo</h3>
+        <p>Note: This demo uses FAKE ESTIMATES, not real data</p>
+
         <Box {...boxOptions}>
           <Select.Root
             value={selectedCapacity}
@@ -206,9 +210,37 @@ export const EnergyCalculator = ({
               The average monthly cost to operate the {results.spa.name} is $
               {results.cost}.
             </p>
+            <p>This was calculated based on:</p>
+            <ul>
+              <li>The spa&apos;s estimated monthly energy consumption (from DatoCMS): <code>{results.kWh} kWh/mo</code></li>
+              <li>The climate&apos;s mean temperature (from DatoCMS): <code>{results.climate.averageTemperature}°C</code></li>
+              <li>The climate&apos;s mean electricity cost (from DatoCMS): <code>${results.climate.electricityRate}/kWh</code></li>
+              <li>The formula for estimating energy usage, <span dangerouslySetInnerHTML={{__html: mathFormula}}/></li>
+            </ul>
           </>
         )}
       </Container>
     </Box>
   );
 };
+
+
+const mathFormula: string = `<math xmlns="http://www.w3.org/1998/Math/MathML">
+  <mi>Cost</mi>
+  <mo>=</mo>
+  <mi>energy_consumption_in_kWh_per_mo</mi>
+  <mo>&#x00D7;</mo>
+  <mi>rate_per_kWh</mi>
+  <mo>&#x00D7;</mo>
+  <mo>(</mo>
+  <mn>1</mn>
+  <mo>+</mo>
+  <mn>0.0312</mn>
+  <mo>&#x00D7;</mo>
+  <mo>(</mo>
+  <mn>13.53</mn>
+  <mo>−</mo>
+  <mi>mean_temperature_in_deg_C</mi>
+  <mo>)</mo>
+  <mo>)</mo>
+</math>`

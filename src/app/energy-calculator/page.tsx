@@ -26,8 +26,6 @@ export default async function EnergyCalculatorPage() {
 
   return (
     <>
-      <h1>Energy Calculator</h1>
-
       <EnergyCalculator allSpas={allSpas} allClimates={allClimates} />
     </>
   );
