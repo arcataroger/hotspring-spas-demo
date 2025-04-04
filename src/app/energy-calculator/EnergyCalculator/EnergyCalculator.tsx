@@ -139,7 +139,7 @@ export const EnergyCalculator = ({
     <Box>
       <Container size={"3"}>
 
-        <h3>Energy calculator demo</h3>
+        <h2>Energy calculator demo</h2>
         <p>Note: This demo uses FAKE ESTIMATES, not real data</p>
 
         <Box {...boxOptions}>
@@ -205,10 +205,10 @@ export const EnergyCalculator = ({
 
         {!!results && (
           <>
-            <h2>Result</h2>
+            <h3>Result</h3>
             <p>
-              The average monthly cost to operate the {results.spa.name} is $
-              {results.cost}.
+              <strong>The average monthly cost to operate the {results.spa.name} is $
+                {results.cost}.</strong>
             </p>
             <p>This was calculated based on:</p>
             <ul>
