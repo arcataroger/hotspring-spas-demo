@@ -29,9 +29,6 @@ export default async function EnergyCalculatorPage() {
       <h1>Energy Calculator</h1>
 
       <EnergyCalculator allSpas={allSpas} allClimates={allClimates} />
-      <pre>
-        <code>{JSON.stringify(data, null, 2)}</code>
-      </pre>
     </>
   );
 }
