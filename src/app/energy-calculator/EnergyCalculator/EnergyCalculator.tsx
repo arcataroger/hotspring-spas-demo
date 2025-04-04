@@ -122,24 +122,30 @@ export const EnergyCalculator = ({
     };
   }, [selectedCapacity, selectedSpaId, selectedClimateId, climates, spas]);
 
-  const selectOptions: Partial<ComponentProps<typeof Select.Root>> = {
-  };
+  const selectOptions: Partial<ComponentProps<typeof Select.Root>> = {};
 
   const boxOptions: Partial<ComponentProps<typeof Box>> = {
     p: "1",
-    width: "100%"
+    width: "100%",
   };
+
+  const selectContentOptions: Partial<ComponentProps<typeof Select.Content>> = {
+    position: "popper",
+    side: "bottom",
+    sideOffset: 0,
+  };
+
   return (
     <Box>
       <Container size={"3"}>
-        <Box {...boxOptions} >
+        <Box {...boxOptions}>
           <Select.Root
             value={selectedCapacity}
             onValueChange={setSelectedCapacity}
             {...selectOptions}
           >
             <Select.Trigger placeholder={"Select Pool Type (# of people)"} />
-            <Select.Content position={"popper"} side={"bottom"} sideOffset={1}>
+            <Select.Content {...selectContentOptions}>
               <Select.Group>
                 {availableCapacities.map((cap) => (
                   <Select.Item key={cap} value={cap.toString()}>
@@ -151,15 +157,16 @@ export const EnergyCalculator = ({
           </Select.Root>
         </Box>
 
-        <Box  {...boxOptions}>
+        <Box {...boxOptions}>
           <Select.Root
             value={selectedSpaId}
             onValueChange={setSelectedSpaId}
             key={selectedCapacity}
             {...selectOptions}
+            disabled={!spasForSelectedCapacity?.length}
           >
-            <Select.Trigger placeholder={"Select a Spa Model"} />
-            <Select.Content>
+            <Select.Trigger placeholder={spasForSelectedCapacity?.length ? "Select a Spa Model" : "(Select Pool Type first)"} />
+            <Select.Content {...selectContentOptions}>
               <Select.Group>
                 {spasForSelectedCapacity.map(({ id, name }) => (
                   <Select.Item key={id} value={id.toString()}>
@@ -171,14 +178,14 @@ export const EnergyCalculator = ({
           </Select.Root>
         </Box>
 
-        <Box  {...boxOptions}>
+        <Box {...boxOptions}>
           <Select.Root
             value={selectedClimateId}
             onValueChange={setSelectedClimateId}
             {...selectOptions}
           >
             <Select.Trigger placeholder={"Select Location & Climate"} />
-            <Select.Content>
+            <Select.Content {...selectContentOptions}>
               <Select.Group>
                 {Object.entries(climates).map(
                   ([id, { name, averageTemperature }]) => (
