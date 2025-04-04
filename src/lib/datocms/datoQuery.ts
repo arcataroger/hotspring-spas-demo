@@ -18,7 +18,7 @@ const defaultOptions: ExecuteQueryOptions = {
 
 export const datoQuery = <Result = unknown, Variables = unknown>(
   query: TypedDocumentNode<Result, Variables>,
-  options?: ExecuteQueryOptions<Variables>,
+  options?: Partial<ExecuteQueryOptions<Variables>>,
 ): Promise<Result> => {
   return executeQuery(query, { ...defaultOptions, ...options });
 };
