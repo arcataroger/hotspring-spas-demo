@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "@radix-ui/themes/styles.css";
-import {Theme, ThemePanel} from "@radix-ui/themes";
+import { Theme } from "@radix-ui/themes";
 
 export const metadata: Metadata = {
   title: "DatoCMS x Hotspring Demo",
@@ -15,10 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-      <Theme accentColor="red" radius="none" appearance="dark">
-        {children}
-          {/*<ThemePanel />*/}
-      </Theme>
+        <Theme accentColor="red" radius="none">
+          {children}
+        </Theme>
       </body>
     </html>
   );
