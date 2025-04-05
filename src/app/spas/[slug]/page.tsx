@@ -4,35 +4,35 @@ import { datoQuery } from "@/lib/datocms/datoQuery";
 export default async function EnergyCalculatorPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const { slug } = await params;
 
-  const energyCalcQuery = gql(`
-      query SpaQuery($slug: String) {
-          spa (filter: {slug: {eq: $slug}}) {
-              id
-              slug
-              name
-              estimatedEnergyConsumption
-              capacity
-              internalName
-              thumbnail {
-                  responsiveImage {
-                      srcSet
-                      src
-                  }
-                  id
-              }
-              specifications {
-                  value
-                  label
-                  id
-              }
-          }
-      }`);
+  const spaQuery = gql(`
+        query SpaQuery($slug: String) {
+            spa (filter: {slug: {eq: $slug}}) {
+                id
+                slug
+                name
+                estimatedEnergyConsumption
+                capacity
+                internalName
+                thumbnail {
+                    responsiveImage {
+                        srcSet
+                        src
+                    }
+                    id
+                }
+                specifications {
+                    value
+                    label
+                    id
+                }
+            }
+        }`);
 
-  const data = await datoQuery(energyCalcQuery, {
+  const data = await datoQuery(spaQuery, {
     variables: {
       slug: slug,
     },
@@ -47,4 +47,19 @@ export default async function EnergyCalculatorPage({
       </pre>
     </>
   );
+}
+
+export async function generateStaticParams() {
+  const data = await datoQuery(
+    gql(`
+        query allSpasQuery {
+            allSpas(first: 500) {
+                slug
+            }
+        }`),
+  );
+
+  return data.allSpas.map((spa) => ({
+    slug: spa.slug
+  }));
 }
