@@ -69,6 +69,7 @@ export const ImageFragment = gql(
         responsiveImage {
             src
             srcSet
+            webpSrcSet
             sizes
             base64
             bgColor

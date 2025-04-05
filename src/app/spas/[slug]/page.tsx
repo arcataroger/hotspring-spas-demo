@@ -2,8 +2,9 @@ import { gql } from "@/lib/graphql/gqltada";
 import { datoQuery } from "@/lib/datocms/datoQuery";
 import { notFound } from "next/navigation";
 import { spaQuery } from "./queries.graphql";
-import { Box, Flex, Heading, Section, Text } from "@radix-ui/themes";
-import { SRCImage } from "react-datocms";
+import { Box, Flex, Grid, Heading, Section, Text } from "@radix-ui/themes";
+import { SRCImage, StructuredText } from "react-datocms";
+import NextImage from "next/image";
 
 export default async function EnergyCalculatorPage({
   params,
@@ -65,6 +66,39 @@ export default async function EnergyCalculatorPage({
             </Text>
           </Box>
         </Flex>
+      </Section>
+
+      <Section id="description">
+        <StructuredText data={spa.description} />
+        <Grid columns={"4"} rows={"2"} gap={"3"} mt={"5"}>
+          {spa.features.map((feature) => {
+            const { icon, name } = feature;
+            return (
+              <Flex
+                key={feature.id}
+                direction={"column"}
+                align={"center"}
+                width={"150px"}
+              >
+                <Box>
+                  <NextImage
+                    src={icon.url}
+                    alt={icon.alt ?? ""}
+                    width={50}
+                    height={50}
+                  />
+                </Box>
+                <Text
+                  style={{ textTransform: "uppercase" }}
+                  size={"1"}
+                  align={"center"}
+                >
+                  {name}
+                </Text>
+              </Flex>
+            );
+          })}
+        </Grid>
       </Section>
     </>
   );

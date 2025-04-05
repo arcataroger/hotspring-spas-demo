@@ -371,9 +371,9 @@ type FeatureRecord implements RecordInterface {
   _status: ItemStatus!
   _unpublishingScheduledAt: DateTime
   _updatedAt: DateTime!
-  icon: FileField
+  icon: FileField!
   id: ItemId!
-  name: String
+  name: String!
 }
 
 type FileField implements FileFieldInterface {

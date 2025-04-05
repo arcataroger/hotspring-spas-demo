@@ -108,7 +108,11 @@ export const spaQuery = gql(
                     id
                     name
                     icon {
-                        ...FileFragment
+                        id
+                        url
+                        width
+                        height
+                        alt
                     }
                 }
             }
