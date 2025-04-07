@@ -5,6 +5,7 @@ import { spaQuery } from "./queries.graphql";
 import { Box, Flex, Grid, Heading, Section, Text } from "@radix-ui/themes";
 import { SRCImage, StructuredText } from "react-datocms";
 import NextImage from "next/image";
+import {ColorConfigurator} from "@/app/spas/[slug]/ColorConfigurator";
 
 export default async function EnergyCalculatorPage({
   params,
@@ -100,6 +101,10 @@ export default async function EnergyCalculatorPage({
           })}
         </Grid>
       </Section>
+
+        <Section id="color-configurator">
+            <ColorConfigurator colorCombinations={spa.colorCombinations}/>
+        </Section>
     </>
   );
 }

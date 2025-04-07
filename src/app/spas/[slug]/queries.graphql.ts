@@ -1,3 +1,5 @@
+// noinspection GraphQLUnresolvedReference
+
 import { gql } from "@/lib/graphql/gqltada";
 import {
   FileFragment,
@@ -40,6 +42,27 @@ const TextWithLinkBlockFragment = gql(
   [ImageFragment],
 );
 
+export const ColorCombinationFragment = gql(
+    `fragment ColorCombinationFragment on ColorCombinationRecord @_unmask {
+        id
+        shells {
+            id
+            name
+            thumbnail {
+                ...ImageFragment
+            }
+        }
+        cabinet {
+            id
+            name
+            thumbnail {
+                ...ImageFragment
+            }
+        }
+    }`,
+    [ImageFragment]
+)
+
 export const spaQuery = gql(
   `
         query SpaQuery($slug: String) {
@@ -67,21 +90,7 @@ export const spaQuery = gql(
                     description
                 }
                 colorCombinations {
-                    id
-                    shells {
-                        id
-                        name
-                        thumbnail {
-                            ...FileFragment
-                        }
-                    }
-                    cabinet {
-                        id
-                        name
-                        thumbnail {
-                            ...FileFragment
-                        }
-                    }
+                    ...ColorCombinationFragment
                 }
                 gallery {
                     url
@@ -122,5 +131,6 @@ export const spaQuery = gql(
     ImageBlockFragment,
     StructTextBlockFragment,
     TextWithLinkBlockFragment,
+      ColorCombinationFragment
   ],
 );

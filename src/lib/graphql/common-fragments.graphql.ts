@@ -1,3 +1,5 @@
+// noinspection GraphQLUnresolvedReference
+
 import {gql} from "@/lib/graphql/gqltada";
 
 export const FileFragment = gql(

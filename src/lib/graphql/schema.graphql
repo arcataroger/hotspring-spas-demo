@@ -67,8 +67,8 @@ type CabinetRecord implements RecordInterface {
   _unpublishingScheduledAt: DateTime
   _updatedAt: DateTime!
   id: ItemId!
-  name: String
-  thumbnail: FileField
+  name: String!
+  thumbnail: ImageFileField!
 }
 
 input ClimateModelFilter {
@@ -249,7 +249,7 @@ type ColorCombinationRecord implements RecordInterface {
   _status: ItemStatus!
   _unpublishingScheduledAt: DateTime
   _updatedAt: DateTime!
-  cabinet: CabinetRecord
+  cabinet: CabinetRecord!
   id: ItemId!
   shells: [ShellRecord!]!
 }
@@ -3533,8 +3533,8 @@ type ShellRecord implements RecordInterface {
   _unpublishingScheduledAt: DateTime
   _updatedAt: DateTime!
   id: ItemId!
-  name: String
-  thumbnail: FileField
+  name: String!
+  thumbnail: ImageFileField!
 }
 
 type Site {
