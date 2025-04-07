@@ -1,0 +1,21 @@
+.colorOption {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: none;
+    box-shadow: none;
+}
+
+/* Hover: 5px drop-shadow in all directions */
+.colorOption:hover {
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Selected: 10px grey frame */
+.colorOption.active {
+    border: 10px solid grey;
+}
+
+.shellPhoto {
+    margin-top: -30px; /* Line it up with the shell */
+}

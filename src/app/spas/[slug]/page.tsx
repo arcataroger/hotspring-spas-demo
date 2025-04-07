@@ -103,7 +103,7 @@ export default async function EnergyCalculatorPage({
       </Section>
 
         <Section id="color-configurator">
-            <ColorConfigurator colorCombinations={spa.colorCombinations}/>
+            <ColorConfigurator colorCombinations={spa.colorCombinations} shellPhotos={spa.shellPhotos}/>
         </Section>
     </>
   );

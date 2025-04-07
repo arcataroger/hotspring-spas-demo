@@ -250,6 +250,7 @@ type ColorCombinationRecord implements RecordInterface {
   _unpublishingScheduledAt: DateTime
   _updatedAt: DateTime!
   cabinet: CabinetRecord!
+  cabinetPhoto: ImageFileField!
   id: ItemId!
   shells: [ShellRecord!]!
 }
@@ -3537,6 +3538,39 @@ type ShellRecord implements RecordInterface {
   thumbnail: ImageFileField!
 }
 
+input ShellWithPhotoModelFilter {
+  id: ItemIdFilter
+  shell: LinkFilter
+  shellPhoto: FileFilter
+  OR: [ShellWithPhotoModelFilter]
+  AND: [ShellWithPhotoModelFilter]
+}
+
+"""Block of type Shell with Photo (shell_with_photo)"""
+type ShellWithPhotoRecord implements RecordInterface {
+  _createdAt: DateTime!
+
+  """Editing URL"""
+  _editingUrl: String
+  _firstPublishedAt: DateTime
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime
+
+  """Generates SEO and Social card meta tags to be used in your frontend"""
+  _seoMetaTags(
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  id: ItemId!
+  shell: ShellRecord!
+  shellPhoto: ImageFileField!
+}
+
 type Site {
   favicon: FileField
   faviconMetaTags(
@@ -3602,6 +3636,7 @@ input SpaModelFilter {
   gallery: GalleryFilter
   internalName: StringFilter
   name: StringFilter
+  shellPhotos: SpaModelShellPhotosFieldFilter
   slug: SlugFilter
   thumbnail: FileFilter
   OR: [SpaModelFilter]
@@ -3637,6 +3672,30 @@ enum SpaModelOrderBy {
   name_DESC
 }
 
+"""Specify nested blocks fields conditions"""
+input SpaModelShellPhotosFieldBlocksConditions {
+  shellWithPhoto: ShellWithPhotoModelFilter
+}
+
+"""Specify nested blocks types presence"""
+input SpaModelShellPhotosFieldBlocksPresence {
+  shellWithPhoto: BooleanType
+}
+
+"""Specify how to filter this specific Modular Content field instance"""
+input SpaModelShellPhotosFieldFilter {
+  """
+  Filter records containing at least one block matching the specified conditions
+  """
+  any: SpaModelShellPhotosFieldBlocksConditions
+
+  """Filter records containing at least one block of any kind or not"""
+  exists: BooleanType
+
+  """Filter records containing at least one block of specified type or not"""
+  containsAny: SpaModelShellPhotosFieldBlocksPresence
+}
+
 """Record of type ♨️ Spa (spa)"""
 type SpaRecord implements RecordInterface {
   _createdAt: DateTime!
@@ -3668,6 +3727,7 @@ type SpaRecord implements RecordInterface {
   id: ItemId!
   internalName: String!
   name: String
+  shellPhotos: [ShellWithPhotoRecord!]!
   slug: String!
   specifications: [SpecificationRecord!]!
   thumbnail: FileField

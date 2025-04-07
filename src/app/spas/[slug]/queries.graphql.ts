@@ -32,6 +32,7 @@ const StructTextBlockFragment =
 
 const TextWithLinkBlockFragment = gql(
   ` fragment TextWithLinkBlockFragment on TextWithLinkBlockRecord @_unmask {
+        __typename
         id
         title
         linkUrl
@@ -42,26 +43,53 @@ const TextWithLinkBlockFragment = gql(
   [ImageFragment],
 );
 
+export const ConfiguratorImageFragment = gql(
+        `fragment ConfiguratorImageFragment on ImageFileField @_unmask {
+        responsiveImage(imgixParams: {fm: jpg}) {
+            src
+            height
+            width
+        }
+    }
+    `,
+);
+
+export const ShellWithPhotoFragment = gql(
+  `fragment ShellWithPhotoFragment on ShellWithPhotoRecord @_unmask {
+        __typename
+        shell {
+            id
+        }
+        shellPhoto {
+            ...ConfiguratorImageFragment
+        }
+    }`,
+  [ConfiguratorImageFragment],
+);
+
 export const ColorCombinationFragment = gql(
-    `fragment ColorCombinationFragment on ColorCombinationRecord @_unmask {
+  `fragment ColorCombinationFragment on ColorCombinationRecord @_unmask {
         id
         shells {
             id
             name
             thumbnail {
-                ...ImageFragment
+                ...ConfiguratorImageFragment
             }
         }
         cabinet {
             id
             name
             thumbnail {
-                ...ImageFragment
+                ...ConfiguratorImageFragment
             }
         }
+        cabinetPhoto {
+            ...ConfiguratorImageFragment
+        }
     }`,
-    [ImageFragment]
-)
+  [ConfiguratorImageFragment],
+);
 
 export const spaQuery = gql(
   `
@@ -88,6 +116,9 @@ export const spaQuery = gql(
                     id
                     name
                     description
+                }
+                shellPhotos {
+                    ...ShellWithPhotoFragment
                 }
                 colorCombinations {
                     ...ColorCombinationFragment
@@ -131,6 +162,7 @@ export const spaQuery = gql(
     ImageBlockFragment,
     StructTextBlockFragment,
     TextWithLinkBlockFragment,
-      ColorCombinationFragment
+    ColorCombinationFragment,
+    ShellWithPhotoFragment,
   ],
 );
