@@ -1,15 +1,17 @@
 "use client";
 import type { ResultOf } from "gql.tada";
 import {
-  type ColorCombinationFragment, ConfiguratorImageFragment,
+  type ColorCombinationFragment,
+  ConfiguratorImageFragment,
   type ShellWithPhotoFragment,
 } from "./queries.graphql";
 import { SRCImage } from "react-datocms";
-import NextImage from 'next/image';
+import NextImage from "next/image";
 import { Heading } from "@radix-ui/themes";
 import styles from "./styles.module.css";
 import { useMemo, useState } from "react";
-import {preload} from 'react-dom'
+import { preload } from "react-dom";
+
 type ColorConfiguratorProps = {
   shellPhotos: ResultOf<typeof ShellWithPhotoFragment>[];
   colorCombinations: ResultOf<typeof ColorCombinationFragment>[];
@@ -54,28 +56,52 @@ export const ColorConfigurator = ({
   const selectedShellPhoto: PhotoInfo = shellPhotosById[selectedShellId];
 
   // Tell browser to preload all the photos
-  const photosToPreload: string[] = [...Object.values(cabinetPhotosById).map(photo => photo.responsiveImage.src),
-    ...Object.values(shellPhotosById).map(photo => photo.responsiveImage.src)
-  ]
+  const photosToPreload: string[] = [
+    ...Object.values(cabinetPhotosById).map(
+      (photo) => photo.responsiveImage.src,
+    ),
+    ...Object.values(shellPhotosById).map((photo) => photo.responsiveImage.src),
+  ];
 
-  photosToPreload.map(url => preload(url, {as: 'image'}))
+  photosToPreload.map((url) => preload(url, { as: "image" }));
 
-  console.log('photosToPreload', photosToPreload)
+  console.log("photosToPreload", photosToPreload);
 
   return (
     <>
-      <NextImage unoptimized={true} loading="eager" src={selectedShellPhoto.responsiveImage.src} className={styles.cabinetPhoto} alt={""} width={selectedShellPhoto.responsiveImage.width} height={selectedShellPhoto.responsiveImage.height}/>
-      <NextImage unoptimized={true} loading="eager" src={selectedCabinetPhoto.responsiveImage.src} className={styles.shellPhoto} alt={""} width={selectedCabinetPhoto.responsiveImage.width} height={selectedCabinetPhoto.responsiveImage.height}/>
+      <NextImage
+        unoptimized={true}
+        loading="eager"
+        src={selectedShellPhoto.responsiveImage.src}
+        className={styles.cabinetPhoto}
+        alt={""}
+        width={selectedShellPhoto.responsiveImage.width}
+        height={selectedShellPhoto.responsiveImage.height}
+      />
+      <NextImage
+        unoptimized={true}
+        loading="eager"
+        src={selectedCabinetPhoto.responsiveImage.src}
+        className={styles.shellPhoto}
+        alt={""}
+        width={selectedCabinetPhoto.responsiveImage.width}
+        height={selectedCabinetPhoto.responsiveImage.height}
+      />
 
       {colorCombinations.map(({ id, shells, cabinet }) => (
         <div key={id}>
           <Heading as={"h3"} size={"4"}>
             {cabinet.name}
           </Heading>
-          <a onClick={() => setSelectedCabinetId(cabinet.id)}>
+          <a
+            onClick={() => {
+              setSelectedCabinetId(cabinet.id);
+              setSelectedShellId(shells[0].id);
+            }}
+          >
             <SRCImage
               data={cabinet.thumbnail.responsiveImage}
-              imgClassName={styles.colorOption}
+              imgClassName={`${styles.colorOption} ${cabinet.id === selectedCabinetId && styles.selected}`}
             />
           </a>
           <ul>
@@ -85,10 +111,17 @@ export const ColorConfigurator = ({
                   <Heading as={"h4"} size={"3"}>
                     {shell.name}
                   </Heading>
-                  <a onClick={() => setSelectedShellId(shell.id)}>
+                  <a
+                    onClick={() => {
+                      if (selectedCabinetId !== cabinet.id) {
+                        setSelectedCabinetId(cabinet.id);
+                      }
+                      setSelectedShellId(shell.id);
+                    }}
+                  >
                     <SRCImage
                       data={shell.thumbnail.responsiveImage}
-                      imgClassName={styles.colorOption}
+                      imgClassName={`${styles.colorOption} ${cabinet.id === selectedCabinetId && shell.id === selectedShellId && styles.selected}`}
                     />
                   </a>
                 </li>

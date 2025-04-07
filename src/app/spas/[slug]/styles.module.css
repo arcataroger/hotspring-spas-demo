@@ -4,17 +4,21 @@
     border-radius: 50%;
     border: none;
     box-shadow: none;
+    box-sizing: border-box;
+
+    &:hover {
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+        &.selected {
+            box-shadow: none;
+        }
+    }
+
+    &.selected {
+        border: 5px solid #666;
+    }
+
 }
 
-/* Hover: 5px drop-shadow in all directions */
-.colorOption:hover {
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
-}
-
-/* Selected: 10px grey frame */
-.colorOption.active {
-    border: 10px solid grey;
-}
 
 .shellPhoto {
     margin-top: -30px; /* Line it up with the shell */
