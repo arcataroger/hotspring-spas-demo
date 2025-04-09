@@ -6,7 +6,7 @@ import { Box, Flex, Grid, Heading, Section, Text } from "@radix-ui/themes";
 import { SRCImage, StructuredText } from "react-datocms";
 import NextImage from "next/image";
 import { ColorConfigurator } from "@/app/spas/[slug]/ColorConfigurator";
-import BuildingBlocksRenderer from "@/app/spas/[slug]/BuildingBlocksRenderer";
+import { BuildingBlocksRenderer } from "@/app/spas/[slug]/BuildingBlocksRenderer";
 
 export default async function EnergyCalculatorPage({
   params,
@@ -115,24 +115,34 @@ export default async function EnergyCalculatorPage({
       {!!buildingBlocks && (
         <Section id="page-builder">
           {buildingBlocks.map((block) => {
-              switch (block.__typename) {
-                  case 'LeftRightSplitRecord':
+            switch (block.__typename) {
+              case "LeftRightSplitRecord":
+                const rightPart = block.reverseLeftRight
+                  ? block.left
+                  : block.right;
+                const leftPart = block.reverseLeftRight
+                  ? block.right
+                  : block.left;
 
-                      const rightPart = block.reverseLeftRight ? block.left : block.right;
-                      const leftPart = block.reverseLeftRight ? block.right : block.left;
+                return (
+                  <Flex key={block.id}>
+                    <Flex width="50%" align="center" justify="center">
+                      <BuildingBlocksRenderer block={leftPart} />
+                    </Flex>
+                    <Flex width="50%" align="center" justify="center">
+                      <BuildingBlocksRenderer block={rightPart} />
+                    </Flex>
+                  </Flex>
+                );
 
-                      return <Flex key={block.id}>
-                          <Flex width="50%" align="center" justify="center"><BuildingBlocksRenderer block={leftPart}/></Flex>
-                          <Flex width="50%" align="center" justify="center"><BuildingBlocksRenderer block={rightPart}/></Flex>
-                      </Flex>
-
-                  default:
-                      return <div key={block.id}>
-                          <strong>Unknown block type: {block.__typename}</strong>
-                          <pre>{JSON.stringify(block)}</pre>
-                      </div>
-              }
-
+              default:
+                return (
+                  <div key={block.id}>
+                    <strong>Unknown block type: {block.__typename}</strong>
+                    <pre>{JSON.stringify(block)}</pre>
+                  </div>
+                );
+            }
           })}
         </Section>
       )}
