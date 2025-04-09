@@ -5,7 +5,8 @@ import { spaQuery } from "./queries.graphql";
 import { Box, Flex, Grid, Heading, Section, Text } from "@radix-ui/themes";
 import { SRCImage, StructuredText } from "react-datocms";
 import NextImage from "next/image";
-import {ColorConfigurator} from "@/app/spas/[slug]/ColorConfigurator";
+import { ColorConfigurator } from "@/app/spas/[slug]/ColorConfigurator";
+import BuildingBlocksRenderer from "@/app/spas/[slug]/BuildingBlocksRenderer";
 
 export default async function EnergyCalculatorPage({
   params,
@@ -28,6 +29,8 @@ export default async function EnergyCalculatorPage({
 
   const numOfSpecs = spa.specifications.length;
   const numOfLeftColSpecs = Math.ceil(numOfSpecs / 2);
+
+  const { buildingBlocks } = spa;
 
   return (
     <>
@@ -102,9 +105,37 @@ export default async function EnergyCalculatorPage({
         </Grid>
       </Section>
 
-        <Section id="color-configurator">
-            <ColorConfigurator colorCombinations={spa.colorCombinations} shellPhotos={spa.shellPhotos}/>
+      <Section id="color-configurator">
+        <ColorConfigurator
+          colorCombinations={spa.colorCombinations}
+          shellPhotos={spa.shellPhotos}
+        />
+      </Section>
+
+      {!!buildingBlocks && (
+        <Section id="page-builder">
+          {buildingBlocks.map((block) => {
+              switch (block.__typename) {
+                  case 'LeftRightSplitRecord':
+
+                      const rightPart = block.reverseLeftRight ? block.left : block.right;
+                      const leftPart = block.reverseLeftRight ? block.right : block.left;
+
+                      return <Flex key={block.id}>
+                          <Flex width="50%" align="center" justify="center"><BuildingBlocksRenderer block={leftPart}/></Flex>
+                          <Flex width="50%" align="center" justify="center"><BuildingBlocksRenderer block={rightPart}/></Flex>
+                      </Flex>
+
+                  default:
+                      return <div key={block.id}>
+                          <strong>Unknown block type: {block.__typename}</strong>
+                          <pre>{JSON.stringify(block)}</pre>
+                      </div>
+              }
+
+          })}
         </Section>
+      )}
     </>
   );
 }

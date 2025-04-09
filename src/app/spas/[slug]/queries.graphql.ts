@@ -6,7 +6,7 @@ import {
   ImageFragment,
 } from "@/lib/graphql/common-fragments.graphql";
 
-const ImageBlockFragment = gql(
+export const ImageBlockFragment = gql(
   `
         fragment ImageBlockFragment on ImageBlockRecord @_unmask {
             id
@@ -18,7 +18,7 @@ const ImageBlockFragment = gql(
   [ImageFragment],
 );
 
-const StructTextBlockFragment =
+export const StructTextBlockFragment =
   gql(`    fragment StructTextBlockFragment on StructuredTextBlockRecord @_unmask {
     id
     __typename
@@ -30,14 +30,14 @@ const StructTextBlockFragment =
     }
 }`);
 
-const TextWithLinkBlockFragment = gql(
+export const TextWithLinkBlockFragment = gql(
   ` fragment TextWithLinkBlockFragment on TextWithLinkBlockRecord @_unmask {
         __typename
         id
         title
         linkUrl
         linkText
-        bodyText
+        bodyText (markdown: true)
     }
     `,
   [ImageFragment],
@@ -129,6 +129,7 @@ export const spaQuery = gql(
                 buildingBlocks {
                     ... on LeftRightSplitRecord {
                         id
+                        __typename
                         reverseLeftRight
                         left {
                             ...TextWithLinkBlockFragment
