@@ -7,19 +7,22 @@ import {
 } from "./queries.graphql";
 import { SRCImage } from "react-datocms";
 import NextImage from "next/image";
-import { Flex, Heading } from "@radix-ui/themes";
+import { Box, Flex, Grid, Heading } from "@radix-ui/themes";
 import styles from "./styles.module.css";
 import { useMemo, useState } from "react";
 import { preload } from "react-dom";
 
+type ColorCombination = ResultOf<typeof ColorCombinationFragment>;
+type Shells = ColorCombination["shells"];
+type Shell = Shells[number];
+type Cabinet = ColorCombination["cabinet"];
+
 type ColorConfiguratorProps = {
   shellPhotos: ResultOf<typeof ShellWithPhotoFragment>[];
-  colorCombinations: ResultOf<typeof ColorCombinationFragment>[];
+  colorCombinations: ColorCombination[];
 };
 
 type PhotoInfo = ResultOf<typeof ConfiguratorImageFragment>;
-
-type Shells = ResultOf<typeof ColorCombinationFragment>["shells"];
 
 export const ColorConfigurator = ({
   colorCombinations,
@@ -66,41 +69,78 @@ export const ColorConfigurator = ({
   ];
   photosToPreload.map((url) => preload(url, { as: "image" }));
 
-  // Colors available for current shell
-  const availableShellsForSelectedCabinet = useMemo<Shells>(() => {
+  const selectedColorCombination = useMemo<ColorCombination | null>(() => {
     const selectedCabinet = colorCombinations.find(
       ({ cabinet }) => cabinet.id === selectedCabinetId,
     );
 
-    return selectedCabinet?.shells ?? [];
-  }, [selectedCabinetId, colorCombinations]);
+    return selectedCabinet ?? null;
+  }, [colorCombinations, selectedCabinetId]);
+
+  const availableShellsForSelectedCabinet = useMemo<Shells>(() => {
+    return selectedColorCombination?.shells ?? [];
+  }, [selectedColorCombination]);
+
+  const selectedShell = useMemo<Shell | null>(() => {
+    const selectedShell = selectedColorCombination?.shells.find(
+      ({ id }) => id === selectedShellId,
+    );
+    return selectedShell ?? null;
+  }, [selectedColorCombination, selectedShellId]);
 
   return (
     <>
-      <Flex>
-        <Flex flexGrow={"1"}>
-          {colorCombinations.map(({ id, shells, cabinet }) => (
-            <div key={id}>
-              <Heading as={"h3"} size={"4"}>
-                {cabinet.name}
-              </Heading>
-              <a
-                onClick={() => {
-                  setSelectedCabinetId(cabinet.id);
+      <Box>
+        <Heading as={"h2"} size={"7"} mb={"5"} align={"center"}>
+          Color Options
+        </Heading>
+      </Box>
+      <Flex align={"center"}>
+        <Flex flexGrow={"1"} direction={"column"} align={"center"}>
+          <Box>
+            <Heading
+              as={"h3"}
+              size={"6"}
+              style={{
+                borderBottom: "1px solid blue",
+                marginBottom: "15px",
+                width: "100%",
+              }}
+              align={"center"}
+            >
+              Cabinet
+            </Heading>
+            <Heading as={"h4"} size={"4"} align={"center"}>
+              {selectedColorCombination?.cabinet.name}
+            </Heading>
+          </Box>
+          <Flex mt={"5"}>
+            <Grid columns={"3"} rows={"2"} gap={"1"}>
+              {colorCombinations.map(({ id, shells, cabinet }) => (
+                <div key={id}>
+                  <a
+                    onClick={() => {
+                      setSelectedCabinetId(cabinet.id);
 
-                  // Reset to first available shell if the previously chosen color isn't available for this cabinet
-                  if(!availableShellsForSelectedCabinet.some(shell => selectedShellId === shell.id)) {
-                    setSelectedShellId(shells[0].id);
-                  }
-                }}
-              >
-                <SRCImage
-                  data={cabinet.thumbnail.responsiveImage}
-                  imgClassName={`${styles.colorOption} ${cabinet.id === selectedCabinetId && styles.selected}`}
-                />
-              </a>
-            </div>
-          ))}
+                      // Reset to first available shell if the previously chosen color isn't available for this cabinet
+                      if (
+                        !availableShellsForSelectedCabinet.some(
+                          (shell) => selectedShellId === shell.id,
+                        )
+                      ) {
+                        setSelectedShellId(shells[0].id);
+                      }
+                    }}
+                  >
+                    <SRCImage
+                      data={cabinet.thumbnail.responsiveImage}
+                      imgClassName={`${styles.colorOption} ${cabinet.id === selectedCabinetId && styles.selected}`}
+                    />
+                  </a>
+                </div>
+              ))}
+            </Grid>
+          </Flex>
         </Flex>
         <Flex flexShrink={"0"} direction={"column"}>
           <NextImage
@@ -122,28 +162,41 @@ export const ColorConfigurator = ({
             height={selectedCabinetPhoto.responsiveImage.height}
           />
         </Flex>
-        <Flex flexGrow={"1"}>
-          <ul>
+        <Flex flexGrow={"1"} direction={"column"}>
+          <Box mb={"5"}>
+            <Heading
+              as={"h3"}
+              size={"6"}
+              style={{
+                borderBottom: "1px solid blue",
+                marginBottom: "15px",
+                width: "100%",
+              }}
+              align={"center"}
+            >
+              Shells
+            </Heading>
+            <Heading as={"h4"} size={"4"} align={"center"}>
+              {selectedShell?.name}
+            </Heading>
+          </Box>
+          <Grid rows={"2"} columns={"3"}>
             {availableShellsForSelectedCabinet.map((shell) => {
               return (
-                <li key={`${selectedCabinetId}-${shell.id}`}>
-                  <Heading as={"h4"} size={"3"}>
-                    {shell.name}
-                  </Heading>
-                  <a
-                    onClick={() => {
-                      setSelectedShellId(shell.id);
-                    }}
-                  >
-                    <SRCImage
-                      data={shell.thumbnail.responsiveImage}
-                      imgClassName={`${styles.colorOption} ${shell.id === selectedShellId && styles.selected}`}
-                    />
-                  </a>
-                </li>
+                <a
+                  onClick={() => {
+                    setSelectedShellId(shell.id);
+                  }}
+                  key={shell.id}
+                >
+                  <SRCImage
+                    data={shell.thumbnail.responsiveImage}
+                    imgClassName={`${styles.colorOption} ${shell.id === selectedShellId && styles.selected}`}
+                  />
+                </a>
               );
             })}
-          </ul>
+          </Grid>
         </Flex>
       </Flex>
     </>
