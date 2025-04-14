@@ -7,7 +7,7 @@ import {
 } from "./queries.graphql";
 import { SRCImage } from "react-datocms";
 import NextImage from "next/image";
-import { Heading } from "@radix-ui/themes";
+import { Flex, Heading } from "@radix-ui/themes";
 import styles from "./styles.module.css";
 import { useMemo, useState } from "react";
 import { preload } from "react-dom";
@@ -18,6 +18,8 @@ type ColorConfiguratorProps = {
 };
 
 type PhotoInfo = ResultOf<typeof ConfiguratorImageFragment>;
+
+type Shells = ResultOf<typeof ColorCombinationFragment>["shells"];
 
 export const ColorConfigurator = ({
   colorCombinations,
@@ -62,74 +64,88 @@ export const ColorConfigurator = ({
     ),
     ...Object.values(shellPhotosById).map((photo) => photo.responsiveImage.src),
   ];
-
   photosToPreload.map((url) => preload(url, { as: "image" }));
 
-  console.log("photosToPreload", photosToPreload);
+  // Colors available for current shell
+  const availableShellsForSelectedCabinet = useMemo<Shells>(() => {
+    const selectedCabinet = colorCombinations.find(
+      ({ cabinet }) => cabinet.id === selectedCabinetId,
+    );
+
+    return selectedCabinet?.shells ?? [];
+  }, [selectedCabinetId, colorCombinations]);
 
   return (
     <>
-      <NextImage
-        unoptimized={true}
-        loading="eager"
-        src={selectedShellPhoto.responsiveImage.src}
-        className={styles.cabinetPhoto}
-        alt={""}
-        width={selectedShellPhoto.responsiveImage.width}
-        height={selectedShellPhoto.responsiveImage.height}
-      />
-      <NextImage
-        unoptimized={true}
-        loading="eager"
-        src={selectedCabinetPhoto.responsiveImage.src}
-        className={styles.shellPhoto}
-        alt={""}
-        width={selectedCabinetPhoto.responsiveImage.width}
-        height={selectedCabinetPhoto.responsiveImage.height}
-      />
+      <Flex>
+        <Flex flexGrow={"1"}>
+          {colorCombinations.map(({ id, shells, cabinet }) => (
+            <div key={id}>
+              <Heading as={"h3"} size={"4"}>
+                {cabinet.name}
+              </Heading>
+              <a
+                onClick={() => {
+                  setSelectedCabinetId(cabinet.id);
 
-      {colorCombinations.map(({ id, shells, cabinet }) => (
-        <div key={id}>
-          <Heading as={"h3"} size={"4"}>
-            {cabinet.name}
-          </Heading>
-          <a
-            onClick={() => {
-              setSelectedCabinetId(cabinet.id);
-              setSelectedShellId(shells[0].id);
-            }}
-          >
-            <SRCImage
-              data={cabinet.thumbnail.responsiveImage}
-              imgClassName={`${styles.colorOption} ${cabinet.id === selectedCabinetId && styles.selected}`}
-            />
-          </a>
+                  // Reset to first available shell if the previously chosen color isn't available for this cabinet
+                  if(!availableShellsForSelectedCabinet.some(shell => selectedShellId === shell.id)) {
+                    setSelectedShellId(shells[0].id);
+                  }
+                }}
+              >
+                <SRCImage
+                  data={cabinet.thumbnail.responsiveImage}
+                  imgClassName={`${styles.colorOption} ${cabinet.id === selectedCabinetId && styles.selected}`}
+                />
+              </a>
+            </div>
+          ))}
+        </Flex>
+        <Flex flexShrink={"0"} direction={"column"}>
+          <NextImage
+            unoptimized={true}
+            loading="eager"
+            src={selectedShellPhoto.responsiveImage.src}
+            className={styles.cabinetPhoto}
+            alt={""}
+            width={selectedShellPhoto.responsiveImage.width}
+            height={selectedShellPhoto.responsiveImage.height}
+          />
+          <NextImage
+            unoptimized={true}
+            loading="eager"
+            src={selectedCabinetPhoto.responsiveImage.src}
+            className={styles.shellPhoto}
+            alt={""}
+            width={selectedCabinetPhoto.responsiveImage.width}
+            height={selectedCabinetPhoto.responsiveImage.height}
+          />
+        </Flex>
+        <Flex flexGrow={"1"}>
           <ul>
-            {shells.map((shell) => {
+            {availableShellsForSelectedCabinet.map((shell) => {
               return (
-                <li key={`${id}-${shell.id}`}>
+                <li key={`${selectedCabinetId}-${shell.id}`}>
                   <Heading as={"h4"} size={"3"}>
                     {shell.name}
                   </Heading>
                   <a
                     onClick={() => {
-                      if (selectedCabinetId !== cabinet.id) {
-                        setSelectedCabinetId(cabinet.id);
-                      }
                       setSelectedShellId(shell.id);
                     }}
                   >
                     <SRCImage
                       data={shell.thumbnail.responsiveImage}
-                      imgClassName={`${styles.colorOption} ${cabinet.id === selectedCabinetId && shell.id === selectedShellId && styles.selected}`}
+                      imgClassName={`${styles.colorOption} ${shell.id === selectedShellId && styles.selected}`}
                     />
                   </a>
                 </li>
               );
             })}
           </ul>
-        </div>
-      ))}
+        </Flex>
+      </Flex>
     </>
   );
 };
