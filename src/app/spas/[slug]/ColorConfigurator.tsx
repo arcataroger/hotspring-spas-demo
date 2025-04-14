@@ -15,7 +15,6 @@ import { preload } from "react-dom";
 type ColorCombination = ResultOf<typeof ColorCombinationFragment>;
 type Shells = ColorCombination["shells"];
 type Shell = Shells[number];
-type Cabinet = ColorCombination["cabinet"];
 
 type ColorConfiguratorProps = {
   shellPhotos: ResultOf<typeof ShellWithPhotoFragment>[];
