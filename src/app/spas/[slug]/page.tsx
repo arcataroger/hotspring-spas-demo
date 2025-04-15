@@ -7,6 +7,8 @@ import { SRCImage, StructuredText } from "react-datocms";
 import NextImage from "next/image";
 import { ColorConfigurator } from "@/app/spas/[slug]/ColorConfigurator";
 import { BuildingBlocksRenderer } from "@/app/spas/[slug]/BuildingBlocksRenderer";
+import { EnergyCalculator } from "@/app/energy-calculator/component/EnergyCalculator";
+import { energyCalcQuery } from "@/app/energy-calculator/queries.graphql";
 
 export default async function EnergyCalculatorPage({
   params,
@@ -15,13 +17,28 @@ export default async function EnergyCalculatorPage({
 }) {
   const { slug } = await params;
 
-  const data = await datoQuery(spaQuery, {
+  // Fetch data for this particular spa
+  const singleSpaRequest = await datoQuery(spaQuery, {
     variables: {
       slug: slug,
     },
   });
 
-  const { spa } = data;
+  // Fetch basic data on all spas for the energy calc. Cache it on a long TTL
+  const allSpaRequest = await datoQuery(energyCalcQuery, {
+      fetchFn: (input, init) =>
+          fetch(input, {
+              cache: "force-cache",
+              next: {
+                  revalidate: 300, // The energy calc can be cached for longer, like 5 min
+              },
+              ...init,
+          }),
+  });
+
+  const { spa } = singleSpaRequest;
+
+  const { allClimates, allSpas } = allSpaRequest;
 
   if (!spa) {
     notFound();
@@ -146,6 +163,10 @@ export default async function EnergyCalculatorPage({
           })}
         </Section>
       )}
+
+        <Section id="energy-calculator">
+            <EnergyCalculator allSpas={allSpas} allClimates={allClimates} />
+        </Section>
     </>
   );
 }

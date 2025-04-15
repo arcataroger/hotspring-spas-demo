@@ -1,5 +1,5 @@
 "use client";
-import { Box, Container, Select } from "@radix-ui/themes";
+import {Box, Container, Heading, Select} from "@radix-ui/themes";
 import { type ComponentProps, useEffect, useMemo, useState } from "react";
 
 type Climate = {
@@ -139,7 +139,7 @@ export const EnergyCalculator = ({
     <Box>
       <Container size={"3"}>
 
-        <h2>Energy calculator demo</h2>
+        <Heading size={"8"} align={"center"}>Energy calculator demo</Heading>
         <p>Note: This demo uses FAKE ESTIMATES, not real data</p>
 
         <Box {...boxOptions}>
