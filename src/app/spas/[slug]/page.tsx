@@ -26,14 +26,14 @@ export default async function EnergyCalculatorPage({
 
   // Fetch basic data on all spas for the energy calc. Cache it on a long TTL
   const allSpaRequest = await datoQuery(energyCalcQuery, {
-      fetchFn: (input, init) =>
-          fetch(input, {
-              cache: "force-cache",
-              next: {
-                  revalidate: 300, // The energy calc can be cached for longer, like 5 min
-              },
-              ...init,
-          }),
+    fetchFn: (input, init) =>
+      fetch(input, {
+        cache: "force-cache",
+        next: {
+          revalidate: 300, // The energy calc can be cached for longer, like 5 min
+        },
+        ...init,
+      }),
   });
 
   const { spa } = singleSpaRequest;
@@ -122,12 +122,14 @@ export default async function EnergyCalculatorPage({
         </Grid>
       </Section>
 
-      <Section id="color-configurator">
-        <ColorConfigurator
-          colorCombinations={spa.colorCombinations}
-          shellPhotos={spa.shellPhotos}
-        />
-      </Section>
+      {spa.colorCombinations?.length && (
+        <Section id="color-configurator">
+          <ColorConfigurator
+            colorCombinations={spa.colorCombinations}
+            shellPhotos={spa.shellPhotos}
+          />
+        </Section>
+      )}
 
       {!!buildingBlocks && (
         <Section id="page-builder">
@@ -164,9 +166,9 @@ export default async function EnergyCalculatorPage({
         </Section>
       )}
 
-        <Section id="energy-calculator">
-            <EnergyCalculator allSpas={allSpas} allClimates={allClimates} />
-        </Section>
+      <Section id="energy-calculator">
+        <EnergyCalculator allSpas={allSpas} allClimates={allClimates} />
+      </Section>
     </>
   );
 }
